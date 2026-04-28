@@ -1,12 +1,12 @@
 {
-	"name": "strip-volatile",
+	"name": "@mcowger/pi-strip-volatile",
 	"version": "0.1.0",
 	"description": "A pi extension that prevents volatile runtime data from being persisted to settings.json",
 	"keywords": ["pi-package", "pi-extension"],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/mcowger/strip-volatile.git"
+		"url": "git+https://github.com/mcowger/pi-strip-volatile.git"
 	},
 	"type": "module",
 	"engines": {

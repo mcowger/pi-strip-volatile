@@ -15,14 +15,14 @@ These keys are written to `~/.pi/agent/settings.json` during normal pi operation
 ## Install
 
 ```bash
-pi install git:github.com/mcowger/strip-volatile
+pi install git:github.com/mcowger/pi-strip-volatile
 ```
 
 Or add to your `settings.json`:
 
 ```json
 {
-  "packages": ["git:github.com/mcowger/strip-volatile"]
+  "packages": ["git:github.com/mcowger/pi-strip-volatile"]
 }
 ```
 
