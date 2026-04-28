@@ -12,7 +12,7 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"forceConsistentCasingInFileNames": true,
-		"types": ["node", "vitest/globals"]
+		"types": ["bun-types"]
 	},
 	"include": ["**/*.ts"],
 	"exclude": ["node_modules"]

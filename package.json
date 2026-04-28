@@ -1,16 +1,16 @@
 {
-	"name": "pi-ext-CHANGEME",
+	"name": "strip-volatile",
 	"version": "0.1.0",
 	"description": "A pi.dev extension",
 	"keywords": ["pi-package", "pi-extension"],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/vegardx/pi-ext-CHANGEME.git"
+		"url": "git+https://github.com/mcowger/strip-volatile.git"
 	},
 	"type": "module",
 	"engines": {
-		"node": ">=20"
+		"bun": ">=1.0"
 	},
 	"pi": {
 		"extensions": ["./index.ts"]
@@ -20,6 +20,7 @@
 		"@sinclair/typebox": "*"
 	},
 	"devDependencies": {
+		"@types/bun": "^1.2.22",
 		"@biomejs/biome": "^2.4.12",
 		"@mariozechner/pi-coding-agent": "^0.68.1",
 		"@sinclair/typebox": "^0.34.49",
@@ -31,6 +32,6 @@
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"test": "vitest run",
-		"check": "npm run lint && npm run typecheck && npm run test"
+		"check": "bun run lint && bun run typecheck && bun run test"
 	}
 }
