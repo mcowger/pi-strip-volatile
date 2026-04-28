@@ -72,6 +72,12 @@ function stripVolatileKeys(): void {
 }
 
 export default function (pi: ExtensionAPI) {
+    // Strip on startup to remove any volatile keys pi writes during init
+    pi.on("session_start", async () => {
+        stripVolatileKeys();
+    });
+
+    // Also strip on quit for safety
     pi.on("session_shutdown", async (event, _ctx) => {
         if (event.reason === "quit") {
             stripVolatileKeys();
