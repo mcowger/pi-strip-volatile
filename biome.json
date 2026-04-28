@@ -1,18 +1,20 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"suspicious": {
-				"noExplicitAny": "off"
-			}
-		}
-	},
-	"formatter": {
-		"enabled": true
-	},
-	"files": {
-		"includes": ["**/*.ts"]
-	}
+    "$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "suspicious": {
+                "noExplicitAny": "off"
+            }
+        }
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "files": {
+        "includes": ["**/*.ts"]
+    }
 }
