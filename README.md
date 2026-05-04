@@ -4,13 +4,25 @@ A [pi.dev](https://pi.dev) extension that strips volatile runtime data from `set
 
 ## What it strips
 
+By default, these keys are stripped:
+
 | Key | Why it's volatile |
 |-----|-------------------|
 | `defaultModel` | Set whenever you change models — leaks the last model used |
 | `defaultProvider` | Set alongside `defaultModel` |
 | `lastChangelogVersion` | Written on every version bump to control changelog display |
 
-These keys are written to `~/.pi/agent/settings.json` during normal pi operation. This extension hooks `session_shutdown` and removes them synchronously before the process exits, so they never survive a restart.
+### Custom keys
+
+You can configure which keys are stripped by adding a `stripVolatileKeys` array to your `settings.json`:
+
+```json
+{
+  "stripVolatileKeys": ["defaultModel", "defaultProvider", "lastChangelogVersion", "someOtherKey"]
+}
+```
+
+When `stripVolatileKeys` is present and non-empty, **only** the keys listed in that array are stripped (plus `stripVolatileKeys` itself, which is always cleaned up). If the array is missing or empty, the built-in defaults above are used. This means you can add or remove keys without any code changes.
 
 ## Install
 
@@ -28,7 +40,7 @@ Or add to your `settings.json`:
 
 ## How it works
 
-The extension subscribes to the `session_shutdown` event with `reason: "quit"`, which fires on normal exit (Ctrl+C, Ctrl+D, SIGHUP, SIGTERM). It reads `settings.json`, removes the three volatile keys, and writes the file back using synchronous I/O to ensure the cleanup completes before process termination.
+The extension subscribes to the `session_shutdown` event with `reason: "quit"`, which fires on normal exit (Ctrl+C, Ctrl+D, SIGHUP, SIGTERM). It reads `settings.json`, removes the configured (or default) volatile keys, and writes the file back using synchronous I/O to ensure the cleanup completes before process termination.
 
 Respects `PI_CODING_AGENT_DIR` if set (with `~` expansion), otherwise defaults to `~/.pi/agent`.
 

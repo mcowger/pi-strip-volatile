@@ -2,10 +2,9 @@
  * strip-volatile - A pi extension that prevents volatile runtime data
  * from being persisted to settings.json.
  *
- * Strips these top-level keys on exit:
- *   - defaultModel
- *   - defaultProvider
- *   - lastChangelogVersion
+ * Reads the list of keys to strip from the `stripVolatileKeys` array
+ * in settings.json. Falls back to built-in defaults if not configured.
+ * The `stripVolatileKeys` key itself is always stripped.
  */
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -13,11 +12,15 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 
-const VOLATILE_KEYS = new Set([
+/** Default keys to strip when `stripVolatileKeys` is not set in settings.json */
+const DEFAULT_VOLATILE_KEYS = [
     "defaultModel",
     "defaultProvider",
     "lastChangelogVersion",
-]);
+];
+
+/** The settings.json key that configures which keys to strip */
+const CONFIG_KEY = "stripVolatileKeys";
 
 /**
  * Resolve the agent directory, matching pi's getAgentDir() behavior.
@@ -38,6 +41,23 @@ function getGlobalSettingsPath(): string {
 }
 
 /**
+ * Read the list of volatile keys from settings.json.
+ * Uses the `stripVolatileKeys` array if present, otherwise falls back to defaults.
+ */
+function readVolatileKeysFromConfig(
+    settings: Record<string, unknown>,
+): Set<string> {
+    const configured = settings[CONFIG_KEY];
+    if (Array.isArray(configured) && configured.length > 0) {
+        const keys = configured.filter(
+            (k): k is string => typeof k === "string",
+        );
+        return new Set([...keys, CONFIG_KEY]);
+    }
+    return new Set([...DEFAULT_VOLATILE_KEYS, CONFIG_KEY]);
+}
+
+/**
  * Strip volatile keys from the global settings.json file.
  */
 function stripVolatileKeys(): void {
@@ -51,9 +71,11 @@ function stripVolatileKeys(): void {
         const raw = readFileSync(settingsPath, "utf-8");
         const settings = JSON.parse(raw);
 
+        const volatileKeys = readVolatileKeysFromConfig(settings);
+
         let changed = false;
         for (const key of Object.keys(settings)) {
-            if (VOLATILE_KEYS.has(key)) {
+            if (volatileKeys.has(key)) {
                 delete settings[key];
                 changed = true;
             }
@@ -72,15 +94,21 @@ function stripVolatileKeys(): void {
 }
 
 export default function (pi: ExtensionAPI) {
-    // Strip on startup to remove any volatile keys pi writes during init
+    // Strip on startup to clean any keys that leaked in from a previous session
     pi.on("session_start", async () => {
         stripVolatileKeys();
     });
 
-    // Also strip on quit for safety
-    pi.on("session_shutdown", async (event, _ctx) => {
-        if (event.reason === "quit") {
-            stripVolatileKeys();
-        }
+    // Strip when each agent loop starts and ends (idle boundaries, not per-message)
+    pi.on("agent_start", async () => {
+        stripVolatileKeys();
+    });
+    pi.on("agent_end", async () => {
+        stripVolatileKeys();
+    });
+
+    // Strip on exit to ensure volatile keys never persist across sessions
+    pi.on("session_shutdown", async () => {
+        stripVolatileKeys();
     });
 }
