@@ -9,9 +9,9 @@
 		"url": "git+https://github.com/mcowger/pi-strip-volatile.git"
 	},
 	"publishConfig": {
-    		"access": "public",
+		"access": "public",
 		"tag": "next"
-  	},
+	},
 	"type": "module",
 	"engines": {
 		"bun": ">=1.0"
@@ -35,5 +35,8 @@
 		"lint:fix": "biome check --write .",
 		"test": "vitest run",
 		"check": "bun run lint && bun run typecheck && bun run test"
+	},
+	"dependencies": {
+		"tiny-jsonc": "^1.0.2"
 	}
 }

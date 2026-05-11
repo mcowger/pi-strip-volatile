@@ -11,14 +11,16 @@ By default, these keys are stripped:
 | `defaultModel` | Set whenever you change models — leaks the last model used |
 | `defaultProvider` | Set alongside `defaultModel` |
 | `lastChangelogVersion` | Written on every version bump to control changelog display |
+| `defaultThinkingLevel` | Set when changing thinking budget |
 
 ### Custom keys
 
-You can configure which keys are stripped by adding a `stripVolatileKeys` array to your `settings.json`:
+You can configure which keys are stripped by editing `extensions/pi-strip-volatile.jsonc`:
 
-```json
+```jsonc
 {
-  "stripVolatileKeys": ["defaultModel", "defaultProvider", "lastChangelogVersion", "someOtherKey"]
+  // Configuration for pi-strip-volatile extension
+  "stripVolatileKeys": ["defaultModel", "defaultProvider", "lastChangelogVersion", "defaultThinkingLevel", "someOtherKey"]
 }
 ```
 
@@ -43,6 +45,10 @@ Or add to your `settings.json`:
 The extension subscribes to the `session_shutdown` event with `reason: "quit"`, which fires on normal exit (Ctrl+C, Ctrl+D, SIGHUP, SIGTERM). It reads `settings.json`, removes the configured (or default) volatile keys, and writes the file back using synchronous I/O to ensure the cleanup completes before process termination.
 
 Respects `PI_CODING_AGENT_DIR` if set (with `~` expansion), otherwise defaults to `~/.pi/agent`.
+
+## Configuration
+
+The extension stores its configuration in `extensions/pi-strip-volatile.jsonc` within the agent directory. This file is created automatically with default settings on first run.
 
 ## Develop
 
